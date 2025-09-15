@@ -48,13 +48,13 @@
 <body>
   <div class="app">
     <h1>💛 Ruleta de Preguntas — Equipo</h1>
-    <p class="sub">Preguntas aleatorias para conocernos, <strong>sin repetir</strong>, con cronómetro de <strong>1:30</strong> por ronda.</p>
+    <p class="sub">Preguntas aleatorias para conocernos, <strong>sin repetir</strong>, con cronómetro de <strong>45 seg</strong> por ronda.</p>
 
     <div id="question-box">Haz clic en <em> Nueva ronda </em> para empezar</div>
     <div id="question-meta">Restantes: <span id="left">—</span> <span class="badge" id="used-badge" style="display:none">Sin repetidas ✅</span></div>
 
     <div class="controls">
-      <button id="newRoundBtn">▶️ Nueva ronda (1:30)</button>
+      <button id="newRoundBtn">▶️ Nueva ronda (45 seg)</button>
       <button id="pauseBtn" class="secondary">⏸️ Pausar</button>
       <button id="resumeBtn" class="secondary">▶️ Reanudar</button>
       <button id="resetBtn" class="ghost">↺ Reiniciar cronómetro</button>
@@ -62,7 +62,7 @@
     </div>
 
     <div class="timer">
-      <div class="time-face" id="clock">01:30</div>
+      <div class="time-face" id="clock">45 seg</div>
       <div class="bar"><span id="barFill"></span></div>
     </div>
 
@@ -76,7 +76,7 @@
     const BASE_QUESTIONS = [
       // Gustos y divertidas
       "🍕 ¿Cuál es tu comida favorita que podrías comer todos los días?",
-      "🍫 ¿Dulce o salado? ¿Por qué?",
+      "🍫 ¿Dulce o salado?",
       "📺 ¿Cuál es tu guilty pleasure en series o películas?",
       "☕ ¿Equipo mate, café o té?",
       "🎶 ¿Qué canción siempre te pone de buen humor?",
