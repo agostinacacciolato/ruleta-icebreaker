@@ -1,97 +1,217 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ruleta de Preguntas - Ice Breaker</title>
-  <meta name="description" content="Ruleta de preguntas divertida para actividades de ice breaker / speed networking.">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ruleta de Preguntas - Ice Breaker (Equipo)</title>
   <style>
-    body { font-family: 'Segoe UI', sans-serif; text-align: center; background: linear-gradient(135deg, #ffecd2, #fcb69f); padding: 50px; }
-    h1 { color: #222; font-size: 2.2em; margin-bottom: 30px; }
-    #question-box { margin: 40px auto; padding: 40px; background: #fff; border-radius: 20px; box-shadow: 0 6px 15px rgba(0,0,0,0.2); width: 70%; font-size: 1.4em; min-height: 120px; display: flex; align-items: center; justify-content: center; transition: transform 0.3s ease; }
-    #question-box.show { transform: scale(1.05); }
-    button { padding: 15px 30px; font-size: 1.1em; border: none; border-radius: 10px; background: #ff6f61; color: white; cursor: pointer; transition: background 0.3s, transform 0.2s; }
-    button:hover { background: #e63946; transform: scale(1.05); }
-    .spin { animation: spin 1s ease-in-out; }
-    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-    #share-link { display: block; margin-top: 20px; font-size: 1em; color: #0077cc; text-decoration: none; }
-    #share-link:hover { text-decoration: underline; }
-    footer { margin-top: 40px; font-size: 0.9em; color: #333; opacity: 0.8; }
+    :root{
+      --yel-50:#FFFDE7; /* fondo muy suave */
+      --yel-100:#FFF59D;
+      --yel-200:#FFE082;
+      --yel-300:#FFD54F; /* acento */
+      --yel-400:#FFCA28;
+      --yel-500:#FFC107; /* principal */
+      --yel-700:#F9A825; /* botones hover */
+      --ink:#222;
+    }
+    *{box-sizing:border-box}
+    body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif; margin:0; padding:32px; text-align:center; color:var(--ink); background:linear-gradient(135deg,var(--yel-50),#FFF2B2);}    
+    h1{font-size:2.1rem; margin:0 0 8px}
+    p.sub{margin:0 0 24px; opacity:.8}
+
+    .app{max-width:900px; margin:0 auto; background:#fff; border-radius:18px; box-shadow:0 10px 24px rgba(0,0,0,.08); padding:24px}
+
+    #question-box{margin:18px auto; padding:28px; background:linear-gradient(180deg,#fff 0%, #FFF8DC 100%); border:2px dashed var(--yel-300); border-radius:16px; min-height:110px; display:flex; align-items:center; justify-content:center; font-size:1.25rem;}
+    #question-meta{font-size:.95rem; opacity:.8; margin-top:6px}
+
+    .controls{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:12px}
+    button{padding:12px 18px; border:0; border-radius:12px; background:var(--yel-500); color:#3b2e00; font-weight:600; cursor:pointer; transition:.2s transform ease, .2s filter ease, .2s background ease}
+    button:hover{transform:translateY(-1px); background:var(--yel-700)}
+    button.secondary{background:var(--yel-200)}
+    button.ghost{background:transparent; border:2px solid var(--yel-300)}
+
+    .timer{margin-top:18px}
+    .time-face{font-variant-numeric:tabular-nums; font-size:2.2rem; letter-spacing:1px}
+
+    .bar{position:relative; height:14px; background:#FFF3CD; border-radius:999px; overflow:hidden; margin:10px auto; max-width:520px; border:1px solid #FDE68A}
+    .bar > span{position:absolute; left:0; top:0; bottom:0; width:0%; background:linear-gradient(90deg,#FFE082,#FFC107,#F9A825);}
+
+    .badge{display:inline-block; padding:4px 10px; border-radius:999px; background:#FFF3CD; border:1px solid #FDE68A; font-size:.85rem; margin-left:6px}
+
+    .row{display:flex; gap:12px; justify-content:center; align-items:center; flex-wrap:wrap}
+
+    .footer{margin-top:18px; font-size:.9rem; opacity:.8}
+    a.link{color:#ad7a00}
   </style>
 </head>
 <body>
-  <h1>🎉 Ruleta de Preguntas Ice Breaker 🎲</h1>
-  <div id="question-box">Haz clic en el botón para tu pregunta</div>
-  <br>
-  <button onclick="showQuestion()">✨ Girar la Ruleta ✨</button>
-  <a id="share-link" href="#" onclick="sharePage()">🔗 Compartir esta ruleta</a>
+  <div class="app">
+    <h1>💛 Ruleta de Preguntas — Equipo</h1>
+    <p class="sub">Preguntas aleatorias para conocernos, <strong>sin repetir</strong>, con cronómetro de <strong>1:30</strong> por ronda.</p>
 
-  <footer>Hecho con ❤️ para tu equipo</footer>
+    <div id="question-box">Haz clic en <em>Nueva ronda</em> para empezar</div>
+    <div id="question-meta">Restantes: <span id="left">—</span> <span class="badge" id="used-badge" style="display:none">Sin repetidas ✅</span></div>
+
+    <div class="controls">
+      <button id="newRoundBtn">▶️ Nueva ronda (1:30)</button>
+      <button id="pauseBtn" class="secondary">⏸️ Pausar</button>
+      <button id="resumeBtn" class="secondary">▶️ Reanudar</button>
+      <button id="resetBtn" class="ghost">↺ Reiniciar cronómetro</button>
+      <button id="refillBtn" class="ghost">🔁 Reponer preguntas</button>
+    </div>
+
+    <div class="timer">
+      <div class="time-face" id="clock">01:30</div>
+      <div class="bar"><span id="barFill"></span></div>
+    </div>
+
+    <div class="footer">
+      Compartir: <a class="link" href="#" onclick="sharePage()">🔗 Link de esta ruleta</a>
+    </div>
+  </div>
 
   <script>
-    const questions = [
+    // ====== Banco de preguntas ======
+    const BASE_QUESTIONS = [
+      // Gustos y divertidas
       "🍕 ¿Cuál es tu comida favorita que podrías comer todos los días?",
       "🍫 ¿Dulce o salado? ¿Por qué?",
       "📺 ¿Cuál es tu guilty pleasure en series o películas?",
       "☕ ¿Equipo mate, café o té?",
       "🎶 ¿Qué canción siempre te pone de buen humor?",
-      "🍽️ Si pudieras comer solo en un restaurante por el resto del año, ¿cuál sería?",
       "🍩 ¿Chocolate amargo, con leche o blanco?",
-      "📺 ¿Qué serie recomendarías sin dudarlo?",
-      "🎬 ¿Cuál fue la última película que viste y te encantó?",
-      "📚 ¿Libro favorito o el último que leíste?",
-      "🦸 ¿Qué personaje de ficción te representa más?",
-      "🎮 ¿Qué videojuego jugarías por horas sin aburrirte?",
-      "😂 ¿Cuál es tu meme favorito?",
+      "🍍 ¿Pizza con piña: sí o no?",
+      "🎤 ¿Bailar o cantar en karaoke?",
+      "🎥 ¿Series o películas?",
+      
+      // Viajes & experiencias
       "🌍 ¿Lugar más lindo que visitaste?",
       "🏖️ ¿Playa, montaña o ciudad para vacaciones?",
       "✈️ ¿Destino soñado que aún no conocés?",
       "🤪 ¿Tenés alguna anécdota divertida de viaje?",
       "🗺️ ¿Preferís viajar con itinerario planificado o improvisar?",
+
+      // Conociéndonos
       "👶 ¿Cuál fue tu primer trabajo?",
       "🎭 ¿Qué habilidad rara tenés?",
       "🌙 ¿Sos más de madrugar o trasnochar?",
       "😀 ¿Qué emoji usás más seguido?",
-      "📛 ¿Tenés algún apodo curioso?",
-      "🙃 ¿Cuál es tu mayor manía?",
       "📱 ¿Qué app del celular usás más?",
-      "🦁 Si fueras un animal, ¿cuál serías?",
       "🪄 ¿Qué superpoder elegirías por un día?",
       "😅 ¿Cuál fue tu peor look de adolescencia?",
-      "🍦 Si fueras un sabor de helado, ¿cuál serías?",
       "🧸 ¿Cuál fue tu juguete favorito de la infancia?",
       "👻 ¿Qué cosa rara te da miedo?",
       "💰 ¿Qué harías si ganaras la lotería mañana?",
-      "📱 ¿Qué ringtone usabas en tu primer celular?",
-      "🍽️ Si pudieras invitar a cenar a cualquier personaje famoso, ¿a quién elegirías?",
-      "💡 ¿Qué invento creés que te hubiera hecho millonario si lo pensabas primero?",
-      "🍍 ¿Pizza con piña: sí o no?",
-      "🐶 ¿Perros o gatos?",
-      "❄️ ¿Invierno o verano?",
-      "🎤 ¿Bailar o cantar en karaoke?",
-      "🎥 ¿Series o películas?"
+
+      // Orientadas al equipo
+      "🤝 ¿Qué valor te gustaría que definiera a este equipo?",
+      "🧩 ¿Qué fortaleza traés al equipo que te enorgullece?",
+      "🆘 ¿Cómo te gusta que te pidan ayuda cuando estás ocupado/a?",
+      "⏱️ ¿Qué ritual corto propondrías para arrancar reuniones (ej. check-in de ánimo)?",
+      "📣 ¿Cómo preferís recibir feedback: directo y breve o con contexto detallado?",
+      "🏆 Contá una mini victoria reciente del equipo o tuya que te hizo sonreír.",
+      "🔧 ¿Qué herramienta o práctica nos haría colaborar mejor?",
+      "🗓️ ¿Cuál es el mejor horario del día para tu foco profundo?",
+      "🪫 ¿Qué te drena energía en el trabajo y cómo lo evitamos como equipo?",
+      "🎯 ¿Qué te motiva más de los objetivos de este trimestre?",
+      "🧠 ¿Qué querés aprender de algún compañero/a del equipo?",
+      "🙌 ¿Quién te ayudó últimamente y cómo?",
+      "📎 ¿Qué información te gustaría que esté más visible para todos?",
+      "🤗 ¿Qué te hace sentir incluido/a en un equipo?",
+      "📈 ¿Qué métrica divertida podríamos trackear como equipo (ej. mates tomados)?",
+
+      // Pop/cultura
+      "🎬 ¿Cuál fue la última película que viste y te encantó?",
+      "📚 ¿Libro favorito o el último que leíste?",
+      "🦸 ¿Qué personaje de ficción te representa más?",
+      "🎮 ¿Qué videojuego jugarías por horas sin aburrirte?",
+      "😂 ¿Cuál es tu meme favorito?",
+      "📱 ¿Qué ringtone usabas en tu primer celular?"
     ];
 
-    function showQuestion() {
-      const questionBox = document.getElementById("question-box");
-      questionBox.classList.remove("show", "spin");
-      void questionBox.offsetWidth;
-      const randomIndex = Math.floor(Math.random() * questions.length);
-      questionBox.innerHTML = questions[randomIndex];
-      questionBox.classList.add("show", "spin");
+    // ====== Lógica de ruleta sin repetición ======
+    let pool = [];
+    const questionBox = document.getElementById('question-box');
+    const leftSpan = document.getElementById('left');
+    const usedBadge = document.getElementById('used-badge');
+
+    function refillPool(){
+      pool = [...BASE_QUESTIONS];
+      updateLeft();
+      usedBadge.style.display = 'none';
     }
 
-    function sharePage() {
-      if (navigator.share) {
-        navigator.share({
-          title: 'Ruleta de Preguntas Ice Breaker',
-          text: 'Probá esta ruleta de preguntas divertidas 🎉',
-          url: window.location.href
-        }).catch(console.error);
-      } else {
-        alert('Podés copiar y compartir este link: ' + window.location.href);
+    function updateLeft(){ leftSpan.textContent = pool.length; }
+
+    function pickQuestion(){
+      if(pool.length === 0){
+        questionBox.innerHTML = '🎉 ¡Se usaron todas las preguntas! Tocá <strong>Reponer preguntas</strong> para barajar de nuevo.';
+        usedBadge.style.display = 'inline-block';
+        return null;
       }
+      const idx = Math.floor(Math.random() * pool.length);
+      const [q] = pool.splice(idx, 1);
+      updateLeft();
+      usedBadge.style.display = 'inline-block';
+      return q;
     }
+
+    // ====== Cronómetro 1:30 ======
+    const DURATION = 90; // segundos
+    let remaining = DURATION;
+    let timerId = null;
+    const clock = document.getElementById('clock');
+    const bar = document.getElementById('barFill');
+
+    function toMMSS(sec){
+      const m = Math.floor(sec/60).toString().padStart(2,'0');
+      const s = (sec%60).toString().padStart(2,'0');
+      return `${m}:${s}`;
+    }
+    function renderTime(){
+      clock.textContent = toMMSS(remaining);
+      const pct = 100 - (remaining / DURATION)*100;
+      bar.style.width = `${pct}%`;
+    }
+    function resetTimer(){
+      clearInterval(timerId); timerId = null; remaining = DURATION; renderTime();
+    }
+    function startTimer(){
+      clearInterval(timerId);
+      renderTime();
+      timerId = setInterval(()=>{
+        remaining--; renderTime();
+        if(remaining <= 0){
+          clearInterval(timerId); timerId = null; remaining = 0; renderTime();
+          questionBox.innerHTML += '<br><strong>⏰ ¡Tiempo!</strong>';
+        }
+      }, 1000);
+    }
+    function pauseTimer(){ clearInterval(timerId); timerId = null; }
+    function resumeTimer(){ if(!timerId && remaining>0){ startTimer(); } }
+
+    // ====== Interacciones ======
+    document.getElementById('newRoundBtn').addEventListener('click', ()=>{
+      const q = pickQuestion();
+      if(q){ questionBox.innerHTML = q; }
+      remaining = DURATION; startTimer();
+    });
+    document.getElementById('pauseBtn').addEventListener('click', pauseTimer);
+    document.getElementById('resumeBtn').addEventListener('click', resumeTimer);
+    document.getElementById('resetBtn').addEventListener('click', ()=>{ resetTimer(); });
+    document.getElementById('refillBtn').addEventListener('click', ()=>{ refillPool(); questionBox.innerHTML = '🔁 Baraja lista. Tocá <em>Nueva ronda</em> para seguir.'; });
+
+    function sharePage(){
+      if(navigator.share){
+        navigator.share({ title:'Ruleta de Preguntas — Equipo', text:'Probá esta ruleta de preguntas con cronómetro 💛', url: window.location.href }).catch(()=>{});
+      } else { alert('Copiá este link: ' + window.location.href); }
+    }
+    window.sharePage = sharePage; // para el enlace
+
+    // init
+    refillPool();
+    resetTimer();
   </script>
 </body>
 </html>
